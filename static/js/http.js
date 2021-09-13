@@ -6,7 +6,7 @@ function get_all_tasks() {
 }
 
 function add_task() {
-    content_input = document.getElementById("content");
+    const content_input = document.getElementById("content");
     if (content_input.value === "") {
         document.getElementById("info-lbl").innerText = "Please enter a task";
     }
@@ -31,7 +31,7 @@ function display_msg_and_reload(msg) {
 }
 
 function reload_tasks() {
-    tasks_container = document.getElementById('tasks')
+    const tasks_container = document.getElementById('tasks')
     tasks_container.innerHTML = ``;
     fetch('/get_all')
         .then(response => response.text())
