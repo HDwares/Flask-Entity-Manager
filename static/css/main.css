@@ -4,15 +4,17 @@ body{
 }
 
 .content{
-    width: fit-content;
+    width: 60%;
     margin: auto;
 }
 
 table{
     border-collapse: collapse;
+    display: none;
 }
 
 td, th{
+    width: 10rem;
     padding: 1rem;
     border: 1px solid black;
 }

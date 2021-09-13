@@ -14,32 +14,46 @@ class Todo(db.Model):
 
     def __repr__(self):
         return '<Task %r>' % self.id
+    
+    def get_dict(self):
+        return {
+            'id': self.id,
+            'content': self.content,
+            'completed': self.completed,
+            'date_created': self.date_created.date()
+        }
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def home():
+    tasks = Todo.query.order_by(Todo.date_created).all()
+    return render_template('index.html', tasks = tasks)
+
+@app.route('/get_all')
+def get_all_tasks():
+    tasks = Todo.query.order_by(Todo.date_created).all()
+    tasks_dicts = []
+    for task in tasks:
+        tasks_dicts.append(task.get_dict())
+    return {'tasks': tasks_dicts}
+
+@app.route('/add', methods=['POST'])
 def index():
-    if request.method == 'POST':
-        task_content = request.form['content']
-        new_task = Todo(content = task_content)
+    task_content = request.form['content']
+    new_task = Todo(content = task_content)
+    try:
+        db.session.add(new_task)
+        db.session.commit()
+        return ("Task id: %s added successfully" % new_task.id)
+    except:
+        return 'There was an issue adding your task'
 
-        try:
-            db.session.add(new_task)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding your task'
-
-    else:
-        tasks = Todo.query.order_by(Todo.date_created).all()
-        return render_template('index.html', tasks = tasks)
-
-@app.route('/delete/<int:id>')
+@app.route('/delete/<int:id>', methods=['DELETE'])
 def delete(id):
     task_to_delete = Todo.query.get_or_404(id)
-
     try:
         db.session.delete(task_to_delete)
         db.session.commit()
-        return redirect('/')
+        return "Task deleted successfully"
     except:
         return 'There was a problem deleting that task'
 
