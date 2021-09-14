@@ -8,8 +8,9 @@
 <div class="content">
     <h1>To do</h1>
     <form action="javascript:void(0);" id="add-task-form">
-        <input type="text" name="content" id="content">
-        <button type="Submit" onclick="add_task()">Add Task</button>
+        <input type="text" name="content" id="content" data-task-id="">
+        <button class="add-update-btn" type="Submit" 
+            onclick="add_task()" id="add-task-btn">Add Task</button>
     </form>
     <h4 id="info-lbl"></h4>
     <table id="tasks-tbl">

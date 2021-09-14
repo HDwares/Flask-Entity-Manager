@@ -13,8 +13,8 @@ function add_task() {
     else {
         fetch('/add', {
             method: 'POST',
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `content=${content_input.value}`
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({"content": content_input.value})
         })
             .then(response => response.text())
             .then(data => {
@@ -46,7 +46,7 @@ function reload_tasks() {
             <td>${(new Date(task.date_created)).toDateString()}</td>
             <td>
                 <a href="#" onclick="delete_task(${task.id})">Delete</a>
-                <a href="/update/${task.id}">Update</a>
+                <a href="#" onclick="edit_task(${task.id}, '${task.content}')">Update</a>
             </td>
         </tr>`
                 }
@@ -65,5 +65,38 @@ function delete_task(id) {
     })
         .then(response => response.text())
         .then(data => display_msg_and_reload(data))
+        .catch(error => console.log(error))
+}
+
+function edit_task(id, content) {
+    document.getElementById("add-task-btn").remove();
+    document.getElementById("add-task-form").innerHTML += 
+    `<button class="add-update-btn" 
+    onclick="update_task()" id="update-task-btn" 
+    >Update Task</button>`;
+    content_input = document.getElementById("content");
+    content_input.value = content;
+    content_input.setAttribute("data-task-id", id);
+}
+
+function update_task() {
+    const content_input = document.getElementById("content");
+    const content = content_input.value;
+    const id = content_input.getAttribute("data-task-id");
+    fetch('/update', {
+        method: 'PUT',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({"id": id, "content": content})
+    })
+        .then(response => response.text())
+        .then(data => {
+            content_input.value = "";
+            display_msg_and_reload(data);
+            document.getElementById("update-task-btn").remove();
+            document.getElementById("add-task-form").innerHTML += 
+            `<button class="add-update-btn" 
+            onclick="add_task()" id="add-task-btn" 
+            >Add Task</button>`;
+        })
         .catch(error => console.log(error))
 }
